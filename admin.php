@@ -8,6 +8,10 @@ include("include/connectMysql.php");
 if(!login_check($mysqli)){
     redirectTo("login");
 }else {
+    $ban = getBan($_SESSION['user_id']);
+    if($ban['ban'] != 0){
+        redirectTo("login");
+    }
     ?>
 
     <div class="row">
@@ -28,7 +32,7 @@ if(!login_check($mysqli)){
                             <?php
                                 $users = getUsers($mysqli);
 
-                                if(isset($_POST['delete'])){
+                                if(isset($_POST['ban'])){
                                     ?>
                                     <script>
                                         swal({
@@ -56,16 +60,48 @@ if(!login_check($mysqli)){
                                     <?php
                                 }
 
+                                    if(isset($_POST['unban'])){
+                                    ?>
+                                    <script>
+                                        swal({
+                                            title: 'Kas oled kindel?',
+                                            text: 'See kasutaja võib siiski veel ohtlik olla.',
+                                            type: 'warning',
+                                            showCancelButton: true,
+                                            confirmButtonText: 'Jah!',
+                                            cancelButtonText: 'Katkesta!'
+                                        }).then(function () {
+                                            $.ajax({
+                                                url: "ajaxrequests/scriptBan.php",
+                                                type: "POST",
+                                                dataType: "html",
+                                                data: 'id=<?php echo $_POST['users']; ?>',
+                                                success: function () {
+                                                    swal("Valmis!", "Kasutajalt edukalt mängukeeld maha võetud!", "success")
+                                                },
+                                                error: function (xhr, ajaxOptions, thrownError) {
+                                                    swal("Katkestatud!", "Kasutaja mängukeeldu ei võetud maha!", "error")
+                                                }
+                                            });
+                                        });
+                                    </script>
+                                <?php
+                                }
+
                             ?>
+
                             <form method="POST" action="">
-                                <select name="users" class='form-control'>
+                                <select name="users" id="usersSelect" class='form-control'>
+                                    <option>Vali kasutaja...</option>
                                     <?php
                                     while($row = $users->fetch_array(MYSQLI_ASSOC)){
-                                        echo "<option value='$row[ID]' >$row[username]</option>";
+                                        echo "<option value='$row[username]' >$row[username]</option>";
                                     }
                                     ?>
                                 </select>
-                                <button class="btn btn-danger" id="delete" name="delete" style="margin-top:5px;">Pane kasutajale mängukeeld!</button>
+                                <div id="result">
+
+                                </div>
                             </form>
                             <?php
                         }else if($_GET['action'] === "delete"){

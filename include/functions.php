@@ -100,15 +100,21 @@ function login($user, $pass, $mysqli){
                 $errors = "Sinu kasutaja on lukus, kuna oled 5 minuti jooksul liiga palju kordi valed andmed sisestanud!";
             }else{
                 if(password_verify($pass, $db_pass)){
-                    $user_browser = $_SERVER['HTTP_USER_AGENT'];
+                    $ban = getBan($user_id);
+                    if($ban['ban'] != 0){
+                        $errors = "Sinu kasutajal on mängukeeld!";
+                        
+                    }else {
+                        $user_browser = $_SERVER['HTTP_USER_AGENT'];
 
-                    $user_id = preg_replace("/[^0-9]+/", "", $user_id);
-                    $_SESSION['user_id'] = $user_id;
-                    // XSS protection as we might print this value
-                    $username = preg_replace("/[^a-zA-Z0-9_\-]+/", "", $username);
-                    $_SESSION['username'] = $username;
-                    redirectTo("home");
-                    exit();
+                        $user_id = preg_replace("/[^0-9]+/", "", $user_id);
+                        $_SESSION['user_id'] = $user_id;
+                        // XSS protection as we might print this value
+                        $username = preg_replace("/[^a-zA-Z0-9_\-]+/", "", $username);
+                        $_SESSION['username'] = $username;
+                        redirectTo("home");
+                        exit();
+                    }
                 }else{
                     $now = time();
                     $mysqli->query("INSERT INTO login_attempts(user_id, time) VALUES ('$user_id', '$now')");
@@ -202,5 +208,15 @@ function getUsers($mysqli){
     $stmt->execute();
     $users = $stmt->get_result();
     return $users;
+}
+
+function getBan($id){
+    global $mysqli;
+    $stmt = $mysqli->prepare("SELECT ban FROM users WHERE ID = '$id'");
+    $stmt->execute();
+    $banned = $stmt->get_result();
+    $ban = $banned->fetch_array();
+
+    return $ban;
 }
 ?>

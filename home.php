@@ -8,6 +8,10 @@ include("include/connectMysql.php");
 if(!login_check($mysqli)){
     redirectTo("login.php");
 }else {
+    $ban = getBan($_SESSION['user_id']);
+    if($ban['ban'] != 0){
+        redirectTo("login");
+    }
     ?>
 
     <div class="row">
