@@ -95,7 +95,11 @@ if(!login_check($mysqli)){
                                     <option>Vali kasutaja...</option>
                                     <?php
                                     while($row = $users->fetch_array(MYSQLI_ASSOC)){
-                                        echo "<option value='$row[username]' >$row[username]</option>";
+                                        if($row['username'] == $_SESSION['username']){
+                                            echo "<option disabled value='$row[username]' >$row[username]</option>";
+                                        }else{
+                                            echo "<option value='$row[username]' >$row[username]</option>";
+                                        }
                                     }
                                     ?>
                                 </select>
@@ -159,7 +163,11 @@ if(!login_check($mysqli)){
                                         <?php
 
                                         while($row = $users->fetch_array(MYSQLI_ASSOC)){
-                                            echo "<option value='$row[username]' >$row[username]</option>";
+                                            if($row['username'] == $_SESSION['username']){
+                                                echo "<option disabled value='$row[username]' >$row[username]</option>";
+                                            }else{
+                                                echo "<option value='$row[username]' >$row[username]</option>";
+                                            }
                                         }
                                         ?>
                                     </select>
