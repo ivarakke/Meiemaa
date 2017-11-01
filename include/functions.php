@@ -103,7 +103,7 @@ function login($user, $pass, $mysqli){
                     $ban = getBan($user_id);
                     if($ban['ban'] != 0){
                         $errors = "Sinu kasutajal on mängukeeld!";
-                        
+
                     }else {
                         $user_browser = $_SERVER['HTTP_USER_AGENT'];
 

@@ -60,3 +60,9 @@ li{
     cursor: default;
     color:gray;
 }
+
+.disabled {
+
+    color: gray !important;
+    pointer-events: none;
+}

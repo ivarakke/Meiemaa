@@ -32,3 +32,24 @@ $('#usersSelect').change(function(){
     xmlhttp.open("GET","ajaxrequests/scriptIfBanned.php?q="+user,true);
     xmlhttp.send();
 });
+
+$('#usersRights').change(function(){
+    var user = $(this).val();
+    if (user=="") {
+        document.getElementById("result").innerHTML="Sellist kasutajat ei eksisteeri!";
+        return;
+    }
+    if (window.XMLHttpRequest) {
+        // code for IE7+, Firefox, Chrome, Opera, Safari
+        xmlhttp=new XMLHttpRequest();
+    } else { // code for IE6, IE5
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange=function() {
+        if (this.readyState==4 && this.status==200) {
+            document.getElementById("result").innerHTML=this.responseText;
+        }
+    }
+    xmlhttp.open("GET","ajaxrequests/scriptRights.php?q="+user,true);
+    xmlhttp.send();
+});

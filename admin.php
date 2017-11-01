@@ -104,13 +104,73 @@ if(!login_check($mysqli)){
                                 </div>
                             </form>
                             <?php
-                        }else if($_GET['action'] === "delete"){
+                        }
+                        else if($_GET['action'] === "delete"){
                             ?>
                                 <h3>Kustuta kasutajaid</h3>
                             <?php
-                        }else{
+                        }
+                        else if($_GET['action'] === "news"){
                             ?>
                                 <h3>Lisa uudiseid</h3>
+                            <?php
+                        }
+                        else if($_GET['action'] === "rights"){
+                            $users = getUsers($mysqli);
+                            ?>
+                                <h3>Muuda õiguseid</h3>
+                                <?php
+                                if(isset($_POST['editrights'])){
+
+                                ?>
+                                <script>
+                                    swal({
+                                        title: 'Kas oled kindel?',
+                                        text: 'Kas oled kindel, et soovid selle kasutaja õiguseid muuta?.',
+                                        type: 'warning',
+                                        showCancelButton: true,
+                                        confirmButtonText: 'Jah!',
+                                        cancelButtonText: 'Katkesta!'
+                                    }).then(function () {
+                                        $.ajax({
+                                            url: "ajaxrequests/scriptChangeRights.php",
+                                            type: "POST",
+                                            data: {
+                                                id: <?php echo '\''.$_POST["changerights"].'\'' ?>,
+                                                rights: <?php echo '\''.$_POST["rights"].'\'' ?>
+                                            },
+                                            dataType: "html",
+                                            success: function () {
+                                                swal("Valmis!", "Õiguseid edukalt muudetud!", "success");
+                                            },
+                                            error: function (xhr, ajaxOptions, thrownError) {
+                                                swal("Viga!", "Proovi uuesti!", "error");
+                                            }
+                                        });
+                                    });
+                                </script>
+                            <?php
+                            }
+
+                            ?>
+                                <form method="POST" action="">
+                                    <select name="changerights" id="usersRights" class='form-control'>
+                                        <option>Vali kasutaja...</option>
+                                        <?php
+
+                                        while($row = $users->fetch_array(MYSQLI_ASSOC)){
+                                            echo "<option value='$row[username]' >$row[username]</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                    <div id="result">
+
+                                    </div>
+                                </form>
+                            <?php
+                        }else{
+                            ?>
+                                <h3>Sellist lehekülge ei eksisteeri!</h3>
                             <?php
                         }
                     }
